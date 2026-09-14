@@ -1,46 +1,152 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111"><link rel="manifest" href="inventory-manifest.json">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<link rel="manifest" href="inventory-manifest.json">
 <title>Essensuals Inventory</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f5;color:#111}
-header{background:#111;color:#fff;padding:20px 16px 16px;position:sticky;top:0;z-index:5}header b{font-size:21px;letter-spacing:.5px}header small{display:block;color:#bbb;margin-top:4px}
-.wrap{max-width:900px;margin:auto;padding:14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 10px #0000000d}.card strong{font-size:22px;display:block}.card span{font-size:12px;color:#666}
-.toolbar{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}input,select,button{font:inherit;border-radius:10px;border:1px solid #ddd;padding:11px;background:#fff}input{flex:1;min-width:160px}button{background:#111;color:#fff;border:0;font-weight:600;cursor:pointer}.secondary{background:#fff;color:#111;border:1px solid #ddd}.danger{background:#b00020}
-.list{display:grid;gap:10px}.item{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 10px #0000000d}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.name{font-weight:700;font-size:16px}.meta{font-size:12px;color:#666;margin-top:4px}.stock{font-size:22px;font-weight:800}.low{color:#b00020}.good{color:#187a32}.actions{display:flex;gap:7px;margin-top:12px}.actions button{flex:1}
-.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;z-index:20}.modal.show{display:flex}.sheet{background:#fff;width:100%;max-width:700px;margin:auto;border-radius:20px 20px 0 0;padding:18px;max-height:90vh;overflow:auto}.sheet h2{margin:0 0 12px}.field{display:grid;gap:6px;margin:10px 0}.field label{font-size:12px;color:#666}.field input,.field select{width:100%;background:#fafafa}
-.empty{text-align:center;padding:35px;color:#777}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:11px 16px;border-radius:30px;display:none;z-index:50}.toast.show{display:block}
+header{background:#111;color:#fff;padding:18px 16px 14px;position:sticky;top:0;z-index:5}
+header b{font-size:21px;letter-spacing:.5px}header small{display:block;color:#bbb;margin-top:4px}
+.wrap{max-width:900px;margin:auto;padding:14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{background:#fff;border-radius:14px;padding:13px;box-shadow:0 2px 10px #0000000d}.card strong{font-size:21px;display:block}.card span{font-size:12px;color:#666}
+.toolbar{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}input,select,button{font:inherit;border-radius:10px;border:1px solid #ddd;padding:11px;background:#fff}
+input{flex:1;min-width:160px}button{background:#111;color:#fff;border:0;font-weight:600;cursor:pointer}.secondary{background:#fff;color:#111;border:1px solid #ddd}
+.danger{background:#b00020}.report{background:#187a32}.list{display:grid;gap:10px}.item{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 10px #0000000d}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.name{font-weight:700;font-size:16px}.meta{font-size:12px;color:#666;margin-top:4px}
+.stock{font-size:22px;font-weight:800}.low{color:#b00020}.good{color:#187a32}.actions{display:flex;gap:7px;margin-top:12px}.actions button{flex:1}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;z-index:20}.modal.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:700px;margin:auto;border-radius:20px 20px 0 0;padding:18px;max-height:92vh;overflow:auto}.sheet h2{margin:0 0 12px}
+.field{display:grid;gap:6px;margin:10px 0}.field label{font-size:12px;color:#666}.field input,.field select{width:100%;background:#fafafa}
+.empty{text-align:center;padding:35px;color:#777}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:11px 16px;border-radius:30px;display:none;z-index:50}
+.toast.show{display:block}.history{max-height:260px;overflow:auto}.historyrow{padding:9px 0;border-bottom:1px solid #eee;font-size:13px}
 @media(max-width:600px){.card{padding:10px}.card strong{font-size:18px}.toolbar>*{width:100%}.actions button{padding:10px 5px;font-size:13px}}
-</style></head>
-<body><header><b>TONI&GUY ESSENSUALS</b><small>RMV 2nd Stage • Salon Inventory</small></header>
-<main class="wrap"><div class="cards"><div class="card"><strong id="total">0</strong><span>Total Products</span></div><div class="card"><strong id="lowCount">0</strong><span>Low Stock</span></div><div class="card"><strong id="stockUnits">0</strong><span>Total Units</span></div></div>
-<div class="toolbar"><input id="search" placeholder="Search products…"><select id="filter"><option value="all">All Products</option><option value="low">Low Stock</option><option value="good">In Stock</option></select><button onclick="openModal()">＋ Add Product</button></div>
-<div id="list" class="list"></div></main>
-<div id="modal" class="modal"><div class="sheet"><div class="row"><h2 id="modalTitle">Add Product</h2><button class="secondary" onclick="closeModal()">✕</button></div><input type="hidden" id="editId">
+</style>
+</head>
+<body>
+<header><b>TONI&GUY ESSENSUALS</b><small>RMV 2nd Stage • Salon Inventory</small></header>
+<main class="wrap">
+<div class="cards">
+<div class="card"><strong id="total">0</strong><span>Total Products</span></div>
+<div class="card"><strong id="lowCount">0</strong><span>Low Stock</span></div>
+<div class="card"><strong id="stockUnits">0</strong><span>Total Units</span></div>
+</div>
+<div class="toolbar">
+<input id="search" placeholder="Search products…">
+<select id="filter"><option value="all">All Products</option><option value="low">Low Stock</option><option value="good">In Stock</option></select>
+<button onclick="openModal()">＋ Add Product</button>
+<button class="report" onclick="openReport()">📲 Daily Update</button>
+</div>
+<div id="list" class="list"></div>
+</main>
+
+<div id="modal" class="modal"><div class="sheet">
+<div class="row"><h2 id="modalTitle">Add Product</h2><button class="secondary" onclick="closeModal()">✕</button></div>
+<input type="hidden" id="editId">
 <div class="field"><label>Product name</label><input id="name" placeholder="e.g. Shampoo 1L"></div>
 <div class="field"><label>Brand</label><input id="brand" placeholder="Brand"></div>
 <div class="field"><label>Category</label><select id="category"><option>Shampoo</option><option>Conditioner</option><option>Hair Colour</option><option>Developer</option><option>Styling</option><option>Skincare</option><option>Disposable</option><option>Other</option></select></div>
-<div class="row"><div class="field" style="flex:1"><label>Current stock</label><input id="stock" type="number" min="0" step="0.01"></div><div class="field" style="flex:1"><label>Unit</label><select id="unit"><option>pcs</option><option>ml</option><option>L</option><option>g</option><option>kg</option></select></div></div>
+<div class="row"><div class="field" style="flex:1"><label>Current stock</label><input id="stock" type="number" min="0" step="0.01"></div>
+<div class="field" style="flex:1"><label>Unit</label><select id="unit"><option>pcs</option><option>ml</option><option>L</option><option>g</option><option>kg</option></select></div></div>
 <div class="field"><label>Minimum stock / reorder level</label><input id="min" type="number" min="0" step="0.01"></div>
-<div class="row"><div class="field" style="flex:1"><label>Purchase price (₹)</label><input id="price" type="number" min="0" step="0.01"></div><div class="field" style="flex:1"><label>Supplier</label><input id="supplier" placeholder="Supplier name"></div></div>
-<div class="actions"><button onclick="saveProduct()">Save Product</button><button class="secondary" onclick="closeModal()">Cancel</button></div></div></div>
+<div class="row"><div class="field" style="flex:1"><label>Purchase price (₹)</label><input id="price" type="number" min="0" step="0.01"></div>
+<div class="field" style="flex:1"><label>Supplier</label><input id="supplier" placeholder="Supplier name"></div></div>
+<div class="actions"><button onclick="saveProduct()">Save Product</button><button class="secondary" onclick="closeModal()">Cancel</button></div>
+</div></div>
+
+<div id="reportModal" class="modal"><div class="sheet">
+<div class="row"><h2>Daily Inventory Update</h2><button class="secondary" onclick="closeReport()">✕</button></div>
+<div id="reportBody"></div>
+<div class="actions"><button class="report" onclick="shareWhatsApp()">📲 Send to WhatsApp</button><button class="secondary" onclick="printReport()">🖨 Print</button></div>
+</div></div>
+
 <div id="toast" class="toast"></div>
+
 <script>
-const KEY='essensuals_inventory_v1';let products=JSON.parse(localStorage.getItem(KEY)||'[]');
+const KEY='essensuals_inventory_v1';
+const LOGKEY='essensuals_inventory_log_v1';
+let products=JSON.parse(localStorage.getItem(KEY)||'[]');
+let logs=JSON.parse(localStorage.getItem(LOGKEY)||'[]');
 const $=id=>document.getElementById(id);
-function persist(){localStorage.setItem(KEY,JSON.stringify(products));render()}
+
+function persist(){localStorage.setItem(KEY,JSON.stringify(products));localStorage.setItem(LOGKEY,JSON.stringify(logs));render()}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function render(){let q=$('search').value.toLowerCase(),f=$('filter').value;let shown=products.filter(p=>(p.name+' '+p.brand+' '+p.category).toLowerCase().includes(q)).filter(p=>f==='all'||(f==='low'?+p.stock<=+p.min:+p.stock>+p.min));
-$('total').textContent=products.length;$('lowCount').textContent=products.filter(p=>+p.stock<=+p.min).length;$('stockUnits').textContent=products.reduce((a,p)=>a+(+p.stock||0),0);
-$('list').innerHTML=shown.length?shown.map(p=>{let low=+p.stock<=+p.min;return `<div class="item"><div class="row"><div><div class="name">${esc(p.name)}</div><div class="meta">${esc(p.brand||'')} • ${esc(p.category)} • ${esc(p.unit)}</div></div><div class="stock ${low?'low':'good'}">${p.stock} ${esc(p.unit)}</div></div><div class="meta">Reorder at ${p.min} ${esc(p.unit)}${p.supplier?' • '+esc(p.supplier):''}${p.price?' • ₹'+Number(p.price).toLocaleString('en-IN'):''}</div><div class="actions"><button onclick="adjust('${p.id}',1)">＋ Stock</button><button onclick="adjust('${p.id}',-1)">− Use</button><button class="secondary" onclick="edit('${p.id}')">Edit</button><button class="danger" onclick="removeProduct('${p.id}')">Delete</button></div></div>`}).join(''):'<div class="empty">No products yet. Tap <b>Add Product</b> to start your inventory.</div>'}
+function esc(s){return String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]))}
+function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function niceDate(){return new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
+function addLog(type,p,qty,note=''){logs.push({id:crypto.randomUUID(),time:new Date().toISOString(),date:today(),type,productId:p.id,productName:p.name,unit:p.unit,qty:Number(qty),note})}
+function render(){
+ let q=$('search').value.toLowerCase(),f=$('filter').value;
+ let shown=products.filter(p=>(p.name+' '+p.brand+' '+p.category).toLowerCase().includes(q))
+ .filter(p=>f==='all'||(f==='low'?+p.stock<=+p.min:+p.stock>+p.min));
+ $('total').textContent=products.length;
+ $('lowCount').textContent=products.filter(p=>+p.stock<=+p.min).length;
+ $('stockUnits').textContent=products.reduce((a,p)=>a+(+p.stock||0),0);
+ $('list').innerHTML=shown.length?shown.map(p=>{
+  let low=+p.stock<=+p.min;
+  return `<div class="item"><div class="row"><div><div class="name">${esc(p.name)}</div><div class="meta">${esc(p.brand||'')} • ${esc(p.category)} • ${esc(p.unit)}</div></div>
+  <div class="stock ${low?'low':'good'}">${p.stock} ${esc(p.unit)}</div></div>
+  <div class="meta">Reorder at ${p.min} ${esc(p.unit)}${p.supplier?' • '+esc(p.supplier):''}${p.price?' • ₹'+Number(p.price).toLocaleString('en-IN'):''}</div>
+  <div class="actions"><button onclick="adjust('${p.id}',1)">＋ Stock</button><button onclick="adjust('${p.id}',-1)">− Use</button><button class="secondary" onclick="edit('${p.id}')">Edit</button><button class="danger" onclick="removeProduct('${p.id}')">Delete</button></div></div>`
+ }).join(''):'<div class="empty">No products yet. Tap <b>Add Product</b> to start your inventory.</div>';
+}
 function openModal(p=null){$('modal').classList.add('show');$('modalTitle').textContent=p?'Edit Product':'Add Product';$('editId').value=p?.id||'';$('name').value=p?.name||'';$('brand').value=p?.brand||'';$('category').value=p?.category||'Shampoo';$('stock').value=p?.stock??'';$('unit').value=p?.unit||'pcs';$('min').value=p?.min??'';$('price').value=p?.price??'';$('supplier').value=p?.supplier||'';$('name').focus()}
 function closeModal(){$('modal').classList.remove('show')}
-function saveProduct(){let name=$('name').value.trim();if(!name)return toast('Enter product name');let id=$('editId').value||crypto.randomUUID();let p={id,name,brand:$('brand').value.trim(),category:$('category').value,stock:+$('stock').value||0,unit:$('unit').value,min:+$('min').value||0,price:+$('price').value||0,supplier:$('supplier').value.trim()};let i=products.findIndex(x=>x.id===id);if(i>=0)products[i]=p;else products.push(p);persist();closeModal();toast('Product saved')}
-function adjust(id,dir){let p=products.find(x=>x.id===id);if(!p)return;let n=prompt(dir>0?`Add stock (${p.unit})`:`Use stock (${p.unit})`,'1');if(n===null)return;let qty=Number(n);if(!Number.isFinite(qty)||qty<=0)return toast('Enter a valid quantity');p.stock=dir>0?+p.stock+qty:Math.max(0,+p.stock-qty);persist();toast(dir>0?'Stock added':'Stock used')}
+function saveProduct(){
+ let name=$('name').value.trim();if(!name)return toast('Enter product name');
+ let id=$('editId').value||crypto.randomUUID();
+ let p={id,name,brand:$('brand').value.trim(),category:$('category').value,stock:+$('stock').value||0,unit:$('unit').value,min:+$('min').value||0,price:+$('price').value||0,supplier:$('supplier').value.trim()};
+ let i=products.findIndex(x=>x.id===id);
+ if(i>=0){let old=products[i];let delta=+p.stock-(+old.stock||0);products[i]=p;if(delta!==0)addLog(delta>0?'in':'used',p,Math.abs(delta),'Edited stock')}
+ else{products.push(p);if(p.stock>0)addLog('in',p,p.stock,'Opening stock')}
+ persist();closeModal();toast('Product saved');
+}
+function adjust(id,dir){
+ let p=products.find(x=>x.id===id);if(!p)return;
+ let n=prompt(dir>0?`Add stock (${p.unit})`:`Use stock (${p.unit})`,'1');if(n===null)return;
+ let qty=Number(n);if(!Number.isFinite(qty)||qty<=0)return toast('Enter a valid quantity');
+ if(dir<0 && qty>Number(p.stock)){toast('Not enough stock');return}
+ p.stock=dir>0?+p.stock+qty:+p.stock-qty;
+ addLog(dir>0?'in':'used',p,qty);
+ persist();toast(dir>0?'Stock added':'Stock used');
+}
 function edit(id){let p=products.find(x=>x.id===id);if(p)openModal(p)}
 function removeProduct(id){let p=products.find(x=>x.id===id);if(p&&confirm(`Delete ${p.name}?`)){products=products.filter(x=>x.id!==id);persist();toast('Product deleted')}}
+function closeReport(){$('reportModal').classList.remove('show')}
+function dailyData(){
+ let day=today(),dayLogs=logs.filter(x=>x.date===day);
+ let ins=dayLogs.filter(x=>x.type==='in'),used=dayLogs.filter(x=>x.type==='used');
+ let low=products.filter(p=>+p.stock<=+p.min);
+ return {dayLogs,ins,used,low};
+}
+function reportText(){
+ let d=dailyData(),t=`TONI&GUY ESSENSUALS – RMV 2nd Stage\nDAILY INVENTORY UPDATE\n${niceDate()}\n\n`;
+ t+=`📦 Total Products: ${products.length}\n📊 Total Stock Units: ${products.reduce((a,p)=>a+(+p.stock||0),0)}\n⚠️ Low Stock: ${d.low.length}\n\n`;
+ t+='📥 STOCK ADDED TODAY\n';t+=d.ins.length?d.ins.map(x=>`• ${x.productName} – +${x.qty} ${x.unit}`).join('\n'):'• None';
+ t+='\n\n📤 STOCK USED TODAY\n';t+=d.used.length?d.used.map(x=>`• ${x.productName} – ${x.qty} ${x.unit}`).join('\n'):'• None';
+ t+='\n\n⚠️ LOW STOCK\n';t+=d.low.length?d.low.map(p=>`• ${p.name} – ${p.stock} ${p.unit} (reorder at ${p.min})`).join('\n'):'• None';
+ return t;
+}
+function openReport(){
+ let d=dailyData(),html=`<p><b>${niceDate()}</b></p><p>📦 Total Products: <b>${products.length}</b><br>📊 Total Stock Units: <b>${products.reduce((a,p)=>a+(+p.stock||0),0)}</b><br>⚠️ Low Stock: <b>${d.low.length}</b></p>`;
+ html+='<h3>📥 Stock Added Today</h3><div class="history">'+(d.ins.length?d.ins.map(x=>`<div class="historyrow">+${x.qty} ${esc(x.unit)} — <b>${esc(x.productName)}</b></div>`).join(''):'<div class="historyrow">None</div>')+'</div>';
+ html+='<h3>📤 Stock Used Today</h3><div class="history">'+(d.used.length?d.used.map(x=>`<div class="historyrow">${x.qty} ${esc(x.unit)} — <b>${esc(x.productName)}</b></div>`).join(''):'<div class="historyrow">None</div>')+'</div>';
+ html+='<h3>⚠️ Low Stock</h3><div class="history">'+(d.low.length?d.low.map(p=>`<div class="historyrow"><b>${esc(p.name)}</b> — ${p.stock} ${esc(p.unit)} (reorder at ${p.min})</div>`).join(''):'<div class="historyrow">None</div>')+'</div>';
+ $('reportBody').innerHTML=html;$('reportModal').classList.add('show');
+}
+function shareWhatsApp(){
+ let text=encodeURIComponent(reportText());
+ window.open('https://wa.me/?text='+text,'_blank');
+}
+function printReport(){
+ let w=window.open('','_blank');if(!w){toast('Allow pop-ups to print');return}
+ w.document.write('<html><head><title>Daily Inventory</title><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:Arial;padding:20px;white-space:pre-wrap">'+esc(reportText()).replace(/\n/g,'<br>')+'</body></html>');
+ w.document.close();w.focus();setTimeout(()=>w.print(),300);
+}
 $('search').oninput=render;$('filter').onchange=render;render();
-if('serviceWorker' in navigator) navigator.serviceWorker.register('inventory-sw.js').catch(()=>{});
-</script></body></html>
+if('serviceWorker' in navigator)navigator.serviceWorker.register('inventory-sw.js').catch(()=>{});
+</script>
+</body>
+</html>

@@ -1,1 +1,9 @@
-{"name":"TONI&GUY Essensuals Inventory","short_name":"Essensuals Stock","start_url":"./inventory.html","display":"standalone","background_color":"#f5f5f5","theme_color":"#111111","icons":[]}
+{
+  "name": "TONI&GUY Essensuals Inventory",
+  "short_name": "Essensuals Inventory",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#111111",
+  "icons": []
+}
